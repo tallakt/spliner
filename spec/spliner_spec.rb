@@ -60,15 +60,15 @@ describe Spliner::Spliner do
 
   it 'supports data ranges given as a string like "10%"' do
     s1 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10%'
-    expect(s1.range.min).to be_within(0.0001).of(-10.0)
-    expect(s1.range.max).to be_within(0.0001).of(110.0)
+    expect(s1.range.first).to be_within(0.0001).of(-10.0)
+    expect(s1.range.last).to be_within(0.0001).of(110.0)
 
     s2 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10.0%'
-    expect(s2.range.min).to be_within(0.0001).of(-10.0)
-    expect(s2.range.max).to be_within(0.0001).of(110.0)
+    expect(s2.range.first).to be_within(0.0001).of(-10.0)
+    expect(s2.range.last).to be_within(0.0001).of(110.0)
 
     s3 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10 %'
-    expect(s3.range.min).to be_within(0.0001).of(-10.0)
-    expect(s3.range.max).to be_within(0.0001).of(110.0)
+    expect(s3.range.first).to be_within(0.0001).of(-10.0)
+    expect(s3.range.last).to be_within(0.0001).of(110.0)
   end
 end

@@ -134,13 +134,13 @@ module Spliner
     def extrapolate(v)
       case @extrapolation_method
       when :hold
-        if v < @x.min
+        if v < @x.first
           @y.first
         else
           @y.last
         end
       else
-        x, y, k = if v < @x.min
+        x, y, k = if v < @x.first
                     [@x.first, @y.first, @k.first]
                   else
                     [@x.last, @y.last, @k[-1]]
