@@ -9,19 +9,19 @@ Installation
 
 Spliner requires Ruby 1.9 or later. Install with rubygems:
 
-  gem install spliner
+    gem install spliner
 
 Quick Start
 -----------
 
 require 'spliner'
 
-  # Initialize a spline interpolation with x range 0.0..2.0
-  my_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5})
+    # Initialize a spline interpolation with x range 0.0..2.0
+    my_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5})
 
-  # Perform interpolation on 31 values ranging from 0..2.0
-  x_values = (0..30).map {|x| x / 30.0 * 2.0 }
-  y_values = x_values.map {|x| my_spline[x] }
+    # Perform interpolation on 31 values ranging from 0..2.0
+    x_values = (0..30).map {|x| x / 30.0 * 2.0 }
+    y_values = x_values.map {|x| my_spline[x] }
 
 Spliner is based on the interpolation described on this page
 http://en.wikipedia.org/wiki/Spline_interpolation
