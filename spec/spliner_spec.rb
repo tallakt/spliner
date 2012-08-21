@@ -2,6 +2,8 @@ require 'spliner'
 
 describe Spliner::Spliner do
   DATASET = {0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}
+  KEYS_0_100 = {0.0 => 0.0, 100.0 => 100.0}
+
 
   it 'should not accept x values that are not increasing' do
     expect(lambda { Spliner::Spliner.new({0 => 0, 0 => 10})}).to raise_exception
@@ -41,5 +43,32 @@ describe Spliner::Spliner do
     s = Spliner::Spliner.new DATASET
     expect(s[-1]).to be_nil
     expect(s[0]).to be_within(0.0001).of(0.0)
+  end
+
+  it 'performs :linear extrapolation outside the data range when such is given' do
+    s = Spliner::Spliner.new KEYS_0_100, :extrapolate => -200..200
+    expect(s.get -110).not_to be_nil
+    expect(s.get -150).to be_within(0.0001).of(-150)
+    expect(s.get 150).to be_within(0.0001).of(150)
+  end
+
+  it 'performs :hold extrapolation' do
+    s = Spliner::Spliner.new KEYS_0_100, :extrapolate => -200..200, :emethod => :hold
+    expect(s.get -150).to be_within(0.0001).of(0)
+    expect(s.get 150).to be_within(0.0001).of(100)
+  end
+
+  it 'supports data ranges given as a string like "10%"' do
+    s1 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10%'
+    expect(s1.range.min).to be_within(0.0001).of(-10.0)
+    expect(s1.range.max).to be_within(0.0001).of(110.0)
+
+    s2 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10.0%'
+    expect(s2.range.min).to be_within(0.0001).of(-10.0)
+    expect(s2.range.max).to be_within(0.0001).of(110.0)
+
+    s3 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10 %'
+    expect(s3.range.min).to be_within(0.0001).of(-10.0)
+    expect(s3.range.max).to be_within(0.0001).of(110.0)
   end
 end

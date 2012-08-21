@@ -4,7 +4,7 @@
 require 'matrix'
 
 module Spliner
-  VERSION = '1.0.0'
+  VERSION = '1.0.1'
 
   # Spliner::Spliner provides cubic spline interpolation based on provided 
   # key points on a X-Y curve.
@@ -20,12 +20,27 @@ module Spliner
   # http://en.wikipedia.org/wiki/Spline_interpolation
   #
   class Spliner
+    attr_reader :range
+
     # Creates a new Spliner::Spliner object to interpolate between
     # the supplied key points. The key points are provided in a hash where
     # the key is the X value, and the value is the Y value. The X values
     # mush be increasing and not duplicate. You must provide at least 
     # two values.
-    def initialize(key_points)
+    #
+    # options may take the following keys:
+    #
+    #   :extrapolate
+    #   Specify an area outside the given X values provided that should return
+    #   a valid number. The value may be either a range (eg. -10..110) or a
+    #   percentage value written as a string (eg '10%'). Default is no
+    #   extrapolation.
+    #
+    #   :emethod
+    #   Specify a method of extrapolation, one of :linear (continue curve as 
+    #   a straigt line, default), or :hold (use Y values at the curve endpoints)
+    #
+    def initialize(key_points, options = {})
 
       @points = key_points
       @x = @points.keys
@@ -58,18 +73,38 @@ module Spliner
       b = vector_helper(tmp)
 
       @k = a.inv * b
+
+      options[:extrapolate].tap do |ex|
+        case ex
+        when /^\d+(\.\d+)?\s?%$/
+          percentage = ex[/\d+(\.\d+)?/].to_f
+          span = @x.last - @x.first
+          extra = span * percentage * 0.01
+          @range = (@x.first - extra)..(@x.last + extra)
+        when Range
+          @range = ex
+        when nil
+          @range = @x.first..@x.last
+        else
+          raise 'Unable to use extrapolation parameter'
+        end
+      end
+
+      @extrapolation_method = options[:emethod] || :linear
     end
 
     # returns an interpolated value
-    def get(x)
-      i = @x_pairs.find_index {|pair| pair.member? x }
+    def get(v)
+      i = @x_pairs.find_index {|pair| pair.member? v }
       if i
         dx = @x[i + 1] - @x[i]
         dy = @y[i + 1] - @y[i]
-        t = (x - @x[i]) / dx
+        t = (v - @x[i]) / dx
         a = @k[i] * dx - dy
         b = -(@k[i + 1] * dx - dy)
         (1 - t) * @y[i] + t * @y[i + 1] + t * (1 - t) * (a * (1 - t) + b * t)
+      elsif range.member? v
+        extrapolate(v)
       else
         nil
       end
@@ -94,6 +129,26 @@ module Spliner
       end
     end
     private :check_points_increasing
+
+    # :nodoc:
+    def extrapolate(v)
+      case @extrapolation_method
+      when :hold
+        if v < @x.min
+          @y.first
+        else
+          @y.last
+        end
+      else
+        x, y, k = if v < @x.min
+                    [@x.first, @y.first, @k.first]
+                  else
+                    [@x.last, @y.last, @k[-1]]
+                  end
+        y + k * (v - x)
+      end
+    end
+    private :extrapolate
 
   end
 end

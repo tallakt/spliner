@@ -6,6 +6,9 @@ Spliner
 Spliner is a Ruby library to perform cubic spline interpolation
 based on provided key points (X1, Y1), (X2, Y2), ... , (Xn,Yn)
 
+It also supports extrapolation outside the provided range of X
+values.
+
 Installation
 ------------
 
@@ -24,6 +27,15 @@ require 'spliner'
     # Perform interpolation on 31 values ranging from 0..2.0
     x_values = (0..30).map {|x| x / 30.0 * 2.0 }
     y_values = x_values.map {|x| my_spline[x] }
+
+
+    # perform extrapolation outside key points using linear Y = aX + b
+    ex_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}, :extrapolate => '10%')
+    xx = ex_spline[2.1] # returns 0.4124999999999999
+
+    # perform extrapolation outside key points using linear Y = aX + b
+    ex_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}, :extrapolate => '10%', :emethod => :hold)
+    xx = ex_spline[2.1] # returns 0.5
 
 Spliner is based on the interpolation described on this page
 http://en.wikipedia.org/wiki/Spline_interpolation
