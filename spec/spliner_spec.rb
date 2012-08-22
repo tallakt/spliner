@@ -6,11 +6,17 @@ describe Spliner::Spliner do
 
 
   it 'should not accept x values that are not increasing' do
-    expect(lambda { Spliner::Spliner.new [0.0, 0.0], [0.0, 1.0] }).to raise_exception
+    expect(lambda { Spliner::Spliner.new [0.0, -1.0], [0.0, 1.0] }).to raise_exception
   end
 
-  it 'should not accept less than two values' do 
-    expect(lambda { Spliner::Spliner.new({0 => 0})}).to raise_exception
+  it 'should support key points with a single value' do
+    s1 = Spliner::Spliner.new Hash[0.0, 0.0]
+    expect(s1.get 0.0).to be_within(0.0001).of(0.0)
+    expect(s1.get 1.5).to be_nil
+
+    s2 = Spliner::Spliner.new Hash[0.0, 0.0], :extrapolate => -1..1
+    expect(s2.get 0.0).to be_within(0.0001).of(0.0)
+    expect(s2.get 0.5).to be_within(0.0001).of(0.0)
   end
 
   it 'supports the Hash initializer' do
@@ -91,5 +97,16 @@ describe Spliner::Spliner do
     s3 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10 %'
     expect(s3.range.first).to be_within(0.0001).of(-10.0)
     expect(s3.range.last).to be_within(0.0001).of(110.0)
+  end
+
+  it 'splits data points with duplicate X values into separate sections' do
+    s = Spliner::Spliner.new [0.0, 1.0, 1.0, 2.0, 2.0, 3.0], [0.0, 0.0, 1.0, 1.0, 2.0, 2.0], :extrapolate => 3.0..4.0
+    expect(s.sections).to eq(3)
+    expect(s[-1.0]).to be_nil
+    expect(s[0.5]).to be_within(0.0001).of(0.0)
+    expect(s[1.5]).to be_within(0.0001).of(1.0)
+    expect(s[2.5]).to be_within(0.0001).of(2.0)
+    expect(s[3.5]).to be_within(0.0001).of(2.0)
+    expect(s[5.0]).to be_nil
   end
 end

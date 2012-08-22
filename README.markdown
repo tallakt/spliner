@@ -40,6 +40,11 @@ Quick Start
     # Alternative intialization using X and Y arrays
     ar_spline = Spliner::Spliner.new [1.0, 2.0, 3.0], [0.0, 3.0, 1.0]
 
+    # When duplicate X values are encountered, two or more discontinuous curves are used
+    two_spline = Spliner::Spliner.new [1.0, 2.0, 2.0, 3.0], [0.0, 3.0, 0.0, 1.0]
+    puts two_spline.sections # prints 2
+    
+
 Spliner is based on the interpolation described on this page
 http://en.wikipedia.org/wiki/Spline_interpolation
  
