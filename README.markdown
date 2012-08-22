@@ -19,7 +19,7 @@ Spliner requires Ruby 1.9 or later. Install with rubygems:
 Quick Start
 -----------
 
-require 'spliner'
+    require 'spliner'
 
     # Initialize a spline interpolation with x range 0.0..2.0
     my_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5})
@@ -37,6 +37,9 @@ require 'spliner'
     ex_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}, :extrapolate => '10%', :emethod => :hold)
     xx = ex_spline[2.1] # returns 0.5
 
+    # Alternative intialization using X and Y arrays
+    ar_spline = Spliner::Spliner.new [1.0, 2.0, 3.0], [0.0, 3.0, 1.0]
+
 Spliner is based on the interpolation described on this page
 http://en.wikipedia.org/wiki/Spline_interpolation
  
@@ -48,6 +51,12 @@ Feel free to fork the project on GitHub and send fork requests. Please
 try to have each feature separated in commits.
 
 
+Home page
+---------
+
+http://www.github.com/tallakt/spliner
+
+http://rubygems.org/gems/spliner
 
 License
 -------

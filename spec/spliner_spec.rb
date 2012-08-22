@@ -6,11 +6,32 @@ describe Spliner::Spliner do
 
 
   it 'should not accept x values that are not increasing' do
-    expect(lambda { Spliner::Spliner.new({0 => 0, 0 => 10})}).to raise_exception
+    expect(lambda { Spliner::Spliner.new [0.0, 0.0], [0.0, 1.0] }).to raise_exception
   end
 
   it 'should not accept less than two values' do 
     expect(lambda { Spliner::Spliner.new({0 => 0})}).to raise_exception
+  end
+
+  it 'supports the Hash initializer' do
+    s1 = Spliner::Spliner.new Hash[0.0, 0.0, 1.0, 1.0]
+    expect(s1[0.5]).to be_within(0.0001).of(0.5)
+
+    s2 = Spliner::Spliner.new Hash[0.0, 0.0, 1.0, 1.0], :extrapolate => '100%'
+    expect(s2[0.5]).to be_within(0.0001).of(0.5)
+    expect(s2.range.first).to be_within(0.0001).of(-1.0)
+  end
+
+  it 'supports the x-y array/vector initializer' do
+    s1 = Spliner::Spliner.new [0.0, 1.0], [0.0, 1.0]
+    expect(s1[0.5]).to be_within(0.0001).of(0.5)
+
+    s2= Spliner::Spliner.new [0.0, 1.0], [0.0, 1.0], :extrapolate => '100%'
+    expect(s2[0.5]).to be_within(0.0001).of(0.5)
+    expect(s2.range.first).to be_within(0.0001).of(-1.0)
+
+    s3 = Spliner::Spliner.new Vector[0.0, 1.0], Vector[0.0, 1.0]
+    expect(s3[0.5]).to be_within(0.0001).of(0.5)
   end
 
   it 'should return the data points themselves' do
