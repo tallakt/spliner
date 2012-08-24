@@ -93,15 +93,15 @@ module Spliner
     # Spliner::Spliner#initialize
     #
     # @overload interpolate(points, x, options)
-    # @param points [Hash{Float => Float}] keys are X values in increasing order, values Y
-    # @param x [Float,Vector,Enumerable(Float)] X value(s) to interpolate on
-    # @param options [Hash]
+    #   @param points [Hash{Float => Float}] keys are X values in increasing order, values Y
+    #   @param x [Float,Vector,Enumerable(Float)] X value(s) to interpolate on
+    #   @param options [Hash]
     #
     # @overload interpolate(key_x, key_y, x, options)
-    # @param key_x [Array(Float),Vector] the X values of the key points
-    # @param_key_y [Array(Float),Vector] the Y values of the key points
-    # @param x [Float,Vector,Enumerable(Float)] X value(s) to interpolate on
-    # @param options [Hash]
+    #   @param key_x [Array(Float),Vector] the X values of the key points
+    #   @param_key_y [Array(Float),Vector] the Y values of the key points
+    #   @param x [Float,Vector,Enumerable(Float)] X value(s) to interpolate on
+    #   @param options [Hash]
     #
     def self.interpolate(*args)
       if (args.first.class == Hash)

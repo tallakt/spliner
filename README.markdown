@@ -22,23 +22,27 @@ Quick Start
     require 'spliner'
 
     # Initialize a spline interpolation with x range 0.0..2.0
-    my_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5})
+    my_spline = Spliner::Spliner.new [0.0, 1.0, 2.0], [0.0, 1.0, 2.0]
 
-    # Perform interpolation on 31 values ranging from 0..2.0
-    x_values = (0..30).map {|x| x / 30.0 * 2.0 }
-    y_values = x_values.map {|x| my_spline[x] }
+    # Interpolate for a single value
+    y1 = my_spline[0.5]
 
+    # Perform interpolation on 11 values ranging from 0..2.0
+    y_values = my_spline[(0.0..2.0).step(0.1)]
+
+    # You may prefer to use the shortcut class method
+    y2 = Spliner::Spliner[[0.0, 1.0, 2.0], [0.0, 1.0, 0.5], 0.5]
 
     # perform extrapolation outside key points using linear Y = aX + b
-    ex_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}, :extrapolate => '10%')
+    ex_spline = Spliner::Spliner.new [0.0, 1.0, 2.0], [0.0, 1.0, 2.0], :extrapolate => '10%'
     xx = ex_spline[2.1] # returns 0.4124999999999999
 
     # perform extrapolation outside key points using linear Y = aX + b
-    ex_spline = Spliner::Spliner.new({0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}, :extrapolate => '10%', :emethod => :hold)
+    ex_spline = Spliner::Spliner.new [0.0, 1.0, 2.0], [0.0, 1.0, 2.0], :extrapolate => '10%', :emethod => :hold)
     xx = ex_spline[2.1] # returns 0.5
 
-    # Alternative intialization using X and Y arrays
-    ar_spline = Spliner::Spliner.new [1.0, 2.0, 3.0], [0.0, 3.0, 1.0]
+    # Alternative intialization using Hash
+    ar_spline = Spliner::Spliner.new({1.0 => 0.0, 2.0 => 3.0, 3.0 => 1.0})
 
     # When duplicate X values are encountered, two or more discontinuous curves are used
     two_spline = Spliner::Spliner.new [1.0, 2.0, 2.0, 3.0], [0.0, 3.0, 0.0, 1.0]
