@@ -127,7 +127,7 @@ describe Spliner::Spliner do
 
   it 'supports the class shortcut method' do
     expect(Spliner::Spliner[DATASET_X, DATASET_Y, 0..2]).to eq(DATASET.values)
-    expect(Spliner::Spliner[DATASET, 0..2, :extrapolate => '5%']).to eq(DATASET.values)
+    expect(Spliner::Spliner::interpolate(DATASET, 0..2, :extrapolate => '5%')).to eq(DATASET.values)
   end
 
 end
