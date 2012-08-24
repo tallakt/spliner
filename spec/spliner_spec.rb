@@ -2,6 +2,8 @@ require 'spliner'
 
 describe Spliner::Spliner do
   DATASET = {0.0 => 0.0, 1.0 => 1.0, 2.0 => 0.5}
+  DATASET_X = [0.0, 1.0, 2.0]
+  DATASET_Y = [0.0, 1.0, 0.5]
   KEYS_0_100 = {0.0 => 0.0, 100.0 => 100.0}
 
 
@@ -109,4 +111,23 @@ describe Spliner::Spliner do
     expect(s[3.5]).to be_within(0.0001).of(2.0)
     expect(s[5.0]).to be_nil
   end
+
+  it 'should accept an array or vector as index' do
+    s = Spliner::Spliner.new DATASET
+    expect(s[*DATASET.keys]).to eq(DATASET.values)
+    expect(s[DATASET.keys]).to eq(DATASET.values)
+    expect(s[Vector[*DATASET.keys]]).to eq(Vector[*DATASET.values])
+  end
+
+  it 'should accept an range/enumerator as index' do
+    s = Spliner::Spliner.new DATASET
+    expect(s[0..2]).to eq(DATASET.values)
+    expect(s[(0.0..2.0).step(1.0)]).to eq(DATASET.values)
+  end
+
+  it 'supports the class shortcut method' do
+    expect(Spliner::Spliner[DATASET_X, DATASET_Y, 0..2]).to eq(DATASET.values)
+    expect(Spliner::Spliner[DATASET, 0..2, :extrapolate => '5%']).to eq(DATASET.values)
+  end
+
 end

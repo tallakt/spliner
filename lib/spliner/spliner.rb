@@ -8,11 +8,19 @@ module Spliner
   # == Example
   #
   #    require 'spliner'
+  #    
   #    # Initialize a spline interpolation with x range 0.0..2.0
   #    my_spline = Spliner::Spliner.new [0.0, 1.0, 2.0], [0.0, 1.0, 0.5]
-  #    # Perform interpolation on 31 values ranging from 0..2.0
-  #    x_values = (0..30).map {|x| x / 30.0 * 2.0 }
-  #    y_values = x_values.map {|x| my_spline[x] }
+  #    
+  #    # Interpolate for a single value
+  #    y1 = my_spline[0.5]
+  #    
+  #    # Perform interpolation on 11 values ranging from 0..2.0
+  #    y_values = my_spline[(0.0..2.0).step(0.1)]
+  #
+  #    # You may prefer to use the shortcut class method
+  #    y2 = Spliner::Spliner[[0.0, 1.0, 2.0], [0.0, 1.0, 0.5], 0.5]
+  #
   #
   # Algorithm based on http://en.wikipedia.org/wiki/Spline_interpolation
   #
@@ -80,6 +88,37 @@ module Spliner
       @extrapolation_method = options[:emethod] || :linear
     end
 
+    # shortcut method to instanciate a Spliner::Spliner object and
+    # return a series of interpolated values. Options are like 
+    # Spliner::Spliner#initialize
+    #
+    # @overload interpolate(points, x, options)
+    # @param points [Hash{Float => Float}] keys are X values in increasing order, values Y
+    # @param x [Float,Vector,Enumerable(Float)] X value(s) to interpolate on
+    # @param options [Hash]
+    #
+    # @overload interpolate(key_x, key_y, x, options)
+    # @param key_x [Array(Float),Vector] the X values of the key points
+    # @param_key_y [Array(Float),Vector] the Y values of the key points
+    # @param x [Float,Vector,Enumerable(Float)] X value(s) to interpolate on
+    # @param options [Hash]
+    #
+    def self.interpolate(*args)
+      if (args.first.class == Hash)
+        key_points, x, options = args
+        s = Spliner.new key_points, (options || {})
+        s[x]
+      else
+        key_x, key_y, x, options = args
+        s = Spliner.new key_x, key_y, (options || {})
+        s[x]
+      end
+    end
+
+    class << self
+      alias :'[]' :interpolate
+    end
+
     # returns the ranges at each slice between duplicate X values
     def split_at_duplicates(x)
       # find all indices with duplicate x values
@@ -89,15 +128,48 @@ module Spliner
     private :split_at_duplicates
 
 
-    # returns an interpolated value
-    def get(v)
-      i = @sections.find_index {|section| section.range.member? v }
-      if i
-        @sections[i].get v
-      elsif range.member? v
-        extrapolate(v)
+    # returns the interpolated Y value(s) at the specified X
+    #
+    # @param x [Float,Vector,Enumerable(Float)] x
+    #
+    # == Example
+    #
+    #    my_spline = Spliner::Spliner.new [0.0, 1.0, 2.0], [0.0, 1.0, 0.5]
+    #    # get one value
+    #    y1 = my_spline.get 0.5
+    #    # get many values
+    #    y2 = my_spline.get [0.5, 1.5, 2.5]
+    #    y3 = my_spline.get 0.5, 1.5, 2.5
+    #    # get a range of values
+    #    y4 = my_spline.get 1..3
+    #    # generate an enumeration of x values
+    #    y5 = my_spline.get (1.5..2.5).step(0.5)
+    #
+    def get(*x)
+      xx = if x.size == 1
+             x.first
+           else
+             x
+           end
+
+      get_func = lambda do |v|
+        i = @sections.find_index {|section| section.range.member? v }
+        if i
+          @sections[i].get v
+        elsif range.member? v
+          extrapolate(v)
+        else
+          nil
+        end
+      end
+
+      case xx
+      when Vector
+         xx.collect {|x| get_func.call(x) }
+      when Enumerable
+        xx.map {|x| get_func.call(x) }
       else
-        nil
+        get_func.call(xx)
       end
     end
 
