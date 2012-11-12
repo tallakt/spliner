@@ -70,12 +70,14 @@ module Spliner
       options ||= {}
 
       if options[:fix_invalid_x]
-        pp = Hash[x.zip y]
-        pp.keys.each_cons(2) do |a,b|
-          pp.delete b if b < a
-        end
-        x = pp.keys
-        y = pp.values
+        begin
+          size_at_start = x.size
+          pp = Hash[x.zip y]
+          to_delete = pp.keys.each_cons(2).select {|a,b| b < a}.map(&:last)
+          to_delete.each {|k| pp.delete k }
+          x = pp.keys
+          y = pp.values
+        end while x.size < size_at_start
       end
 
       @sections = split_at_duplicates(x).map {|slice| SplinerSection.new x[slice], y[slice] }

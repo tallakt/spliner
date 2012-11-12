@@ -135,9 +135,14 @@ describe Spliner::Spliner do
   end
 
   it 'has the option :fix_invalid_x to delete invalid x values (not increasing)' do
-    s = Spliner::Spliner.new [0.0, -1.0, 1.0], [0.0, 1.0, 1.0], :extrapolate => '100%', :fix_invalid_x => true 
+    s = Spliner::Spliner.new [0.0, -1.0, -1.1, 0.5, 0.4, 1.0], [0.0, 1.0, 1.0, 0.5, 1.0, 1.0], :extrapolate => '100%', :fix_invalid_x => true 
     expect(s[0.5]).to be_within(0.001).of(0.5)
     expect(s[-0.5]).to be_within(0.001).of(-0.5)
+
+    # not sure why this one is more difficult
+    x = [ -0.2006675899028778, -0.15321242064237595, -0.1328744888305664, -0.09355448558926582, -0.055590344592928886, -0.01355862058699131, 0.0, -0.008135172538459301, 0.0, -0.005423448514193296 ]
+    y = [ -60.06944274902344, -53.81944274902344, -51.46846008300781, -46.78096008300781, -41.30497741699219, -35.9664306640625, -33.99884033203125, -32.79803466796875, -31.980606079101562, -31.163192749023438 ]
+    s2 = Spliner::Spliner.new x, y, :fix_invalid_x => true 
   end
 
 end
