@@ -99,6 +99,10 @@ describe Spliner::Spliner do
     s3 = Spliner::Spliner.new KEYS_0_100, :extrapolate => '10 %'
     expect(s3.range.first).to be_within(0.0001).of(-10.0)
     expect(s3.range.last).to be_within(0.0001).of(110.0)
+
+    s4 = Spliner::Spliner.new KEYS_0_100, :extrapolate => 0.1
+    expect(s3.range.first).to be_within(0.0001).of(-10.0)
+    expect(s3.range.last).to be_within(0.0001).of(110.0)
   end
 
   it 'splits data points with duplicate X values into separate sections' do
@@ -128,6 +132,12 @@ describe Spliner::Spliner do
   it 'supports the class shortcut method' do
     expect(Spliner::Spliner[DATASET_X, DATASET_Y, 0..2]).to eq(DATASET.values)
     expect(Spliner::Spliner::interpolate(DATASET, 0..2, :extrapolate => '5%')).to eq(DATASET.values)
+  end
+
+  it 'has the option :fix_invalid_x to delete invalid x values (not increasing)' do
+    s = Spliner::Spliner.new [0.0, -1.0, 1.0], [0.0, 1.0, 1.0], :extrapolate => '100%', :fix_invalid_x => true 
+    expect(s[0.5]).to be_within(0.001).of(0.5)
+    expect(s[-0.5]).to be_within(0.001).of(-0.5)
   end
 
 end

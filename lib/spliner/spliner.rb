@@ -42,15 +42,17 @@ module Spliner
     # @overload initialize(key_points, options)
     #   @param key_points [Hash{Float => Float}] keys are X values in increasing order, values Y
     #   @param options [Hash]
-    #   @option options [Range,String] :extrapolate ('0%') either a range or percentage, eg '10.0%'
+    #   @option options [Range,String] :extrapolate ('0%') either a range or percentage, eg '10.0%', or float 0.1
     #   @option options [Symbol] :emethod (:linear) extrapolation method
+    #   @option options [Symbol] :fix_invalid_x (false) delete data points not in increasing order
     #
     # @overload initialize(x, y, options)
     #   @param x [Array(Float),Vector] the X values of the key points
     #   @param y [Array(Float),Vector] the Y values of the key points
     #   @param options [Hash]
-    #   @option options [Range,String] :extrapolate ('0%') either a range or percentage, eg '10.0%'
+    #   @option options [Range,String] :extrapolate ('0%') either a range or percentage, eg '10.0%', or float 0.1
     #   @option options [Symbol] :emethod (:linear) extrapolation method
+    #   @option options [Symbol] :fix_invalid_x (false) delete data points not in increasing order
     #
     def initialize(*param)
       # sort parameters from two alternative initializer signatures
@@ -67,6 +69,15 @@ module Spliner
       end
       options ||= {}
 
+      if options[:fix_invalid_x]
+        pp = Hash[x.zip y]
+        pp.keys.each_cons(2) do |a,b|
+          pp.delete b if b < a
+        end
+        x = pp.keys
+        y = pp.values
+      end
+
       @sections = split_at_duplicates(x).map {|slice| SplinerSection.new x[slice], y[slice] }
 
       # Handle extrapolation option parameter
@@ -79,6 +90,10 @@ module Spliner
           @range = (x.first - extra)..(x.last + extra)
         when Range
           @range = ex
+        when Float
+          span = x.last - x.first
+          extra = span * ex
+          @range = (x.first - extra)..(x.last + extra)
         when nil
           @range = x.first..x.last
         else
