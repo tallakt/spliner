@@ -61,7 +61,8 @@ module Spliner
         t = (v - @x[i]) / dx
         a = @k[i] * dx - dy
         b = -(@k[i + 1] * dx - dy)
-        (1 - t) * @y[i] + t * @y[i + 1] + t * (1 - t) * (a * (1 - t) + b * t)
+        one_minus_t = 1 - t
+        t * @y[i + 1] + one_minus_t * (@y[i] + t * (a * one_minus_t + b * t))
       elsif @x.size == 1 && @x.first == v
         @y.first
       else
