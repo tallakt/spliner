@@ -170,10 +170,10 @@ module Spliner
            end
 
       get_func = lambda do |v|
-        i = @sections.find_index {|section| section.range.member? v }
+        i = @sections.find_index {|section| section.range.cover? v }
         if i
           @sections[i].get v
-        elsif range.member? v
+        elsif range.cover? v
           extrapolate(v)
         else
           nil

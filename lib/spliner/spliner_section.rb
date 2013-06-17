@@ -55,7 +55,7 @@ module Spliner
 
     # returns an interpolated value
     def get(v)
-      i = @x_pairs.find_index {|pair| pair.member? v }
+      i = @x_pairs.find_index {|pair| pair.cover? v }
       if i
         x_pair = @x_pairs[i]
         x_min = x_pair.min
