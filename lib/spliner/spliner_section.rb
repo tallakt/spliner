@@ -46,7 +46,11 @@ module Spliner
         end
         b = vector_helper(tmp)
 
-        @k = a.lup_decomposition.solve( b )
+        if RUBY_VERSION < "1.9.3"
+          @k = a.inv * b
+        else
+          @k = a.lup_decomposition.solve b
+        end
       else
         @k = Vector[0.0]
       end
