@@ -19,7 +19,7 @@ describe Spliner::Spliner do
 
 
   it 'should not accept x values that are not increasing' do
-    expect(lambda { Spliner::Spliner.new [0.0, -1.0], [0.0, 1.0] }).to raise_exception
+    expect { Spliner::Spliner.new [0.0, -1.0], [0.0, 1.0] }.to raise_error(RuntimeError, /increasing order/)
   end
 
   it 'should support key points with a single value' do
