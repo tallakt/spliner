@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/tallakt/spliner.png?branch=master)](http://travis-ci.org/tallakt/spliner)
+[![CI](https://github.com/tallakt/spliner/actions/workflows/ci.yml/badge.svg)](https://github.com/tallakt/spliner/actions/workflows/ci.yml)
 
 Spliner
 =======
@@ -12,7 +12,7 @@ values.
 Installation
 ------------
 
-Spliner requires Ruby 1.9 or later. Install with rubygems:
+Spliner requires Ruby 3.0 or later. Install with rubygems:
 
     gem install spliner
 
@@ -63,9 +63,9 @@ try to have each feature separated in commits.
 Home page
 ---------
 
-http://www.github.com/tallakt/spliner
+https://github.com/tallakt/spliner
 
-http://rubygems.org/gems/spliner
+https://rubygems.org/gems/spliner
 
 License
 -------
