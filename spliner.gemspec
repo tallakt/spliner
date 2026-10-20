@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
 
   # s.add_runtime_dependency "clamp", '~> 0.3'
   s.add_development_dependency "rspec", '~> 2.11'
-  s.add_development_dependency "rake", '~> 0.9'
+  s.add_development_dependency "rake", '>= 12.3.3'
 end
